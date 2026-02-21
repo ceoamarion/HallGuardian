@@ -1,14 +1,12 @@
-import { createRouter, createHashHistory, Link, Outlet } from "@tanstack/react-router";
+import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { FloatingBanner } from "@/components/FloatingBanner";
 import { Button } from "@/components/ui/button";
 import { GraduationCap, LogOut, LayoutDashboard, Code2, User } from "lucide-react";
-import { routeTree } from "../routeTree.gen";
 
-export const router = createRouter({
-	routeTree,
-	history: createHashHistory(),
+export const Route = createRootRoute({
+	component: Root,
 });
 
 function Root() {
