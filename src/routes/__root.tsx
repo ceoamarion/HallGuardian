@@ -17,7 +17,7 @@ function Root() {
 					<nav className="flex items-center justify-between">
 						<Link to="/" className="flex items-center gap-2 text-xl font-bold text-blue-600">
 							<GraduationCap className="size-8" />
-							<span>SmartTrack</span>
+							<span>HallGuardian</span>
 						</Link>
 						<div className="hidden md:flex items-center gap-6">
 							<Link to="/how-it-works" className="text-gray-700 hover:text-blue-600 transition-colors">
@@ -51,7 +51,7 @@ function Root() {
 						<div>
 							<div className="flex items-center gap-2 text-lg font-bold text-blue-600 mb-4">
 								<GraduationCap className="size-6" />
-								<span>SmartTrack</span>
+								<span>HallGuardian</span>
 							</div>
 							<p className="text-gray-600 text-sm">
 								Modern attendance and movement tracking for schools
@@ -81,7 +81,7 @@ function Root() {
 						</div>
 					</div>
 					<div className="mt-8 pt-8 border-t border-gray-200 text-center text-sm text-gray-600">
-						<p>&copy; 2026 SmartTrack. All rights reserved.</p>
+						<p>&copy; 2026 HallGuardian. All rights reserved.</p>
 					</div>
 				</div>
 			</footer>

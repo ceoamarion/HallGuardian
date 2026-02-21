@@ -15,7 +15,7 @@ function HowItWorksPage() {
 				<div className="container mx-auto px-4">
 					<div className="max-w-3xl mx-auto text-center">
 						<h1 className="text-4xl font-bold text-gray-900 mb-4">
-							How SmartTrack Works
+							How HallGuardian Works
 						</h1>
 						<p className="text-lg text-gray-600">
 							A simple, secure QR-code system that tracks student attendance and movement
@@ -159,7 +159,7 @@ function HowItWorksPage() {
 										<div>
 											<h3 className="font-semibold text-gray-900">Encrypted Transmission</h3>
 											<p className="text-sm text-gray-600">
-												Data is encrypted and sent securely to SmartTrack servers
+												Data is encrypted and sent securely to HallGuardian servers
 											</p>
 										</div>
 									</div>
@@ -200,7 +200,7 @@ function HowItWorksPage() {
 							Ready to See It in Action?
 						</h2>
 						<p className="text-lg text-gray-600 mb-8">
-							Schedule a demo to see how SmartTrack can work for your school.
+							Schedule a demo to see how HallGuardian can work for your school.
 						</p>
 						<Link to="/contact">
 							<Button size="lg" className="text-lg px-8 py-6">

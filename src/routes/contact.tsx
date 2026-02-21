@@ -302,7 +302,7 @@ function ContactPage() {
 									<div className="space-y-3">
 										<div className="flex items-center gap-2 text-sm text-gray-700">
 											<Mail className="size-4 text-blue-600" />
-											<span>demo@smarttrack.edu</span>
+											<span>demo@hallguardian.edu</span>
 										</div>
 										<div className="flex items-center gap-2 text-sm text-gray-700">
 											<Phone className="size-4 text-blue-600" />

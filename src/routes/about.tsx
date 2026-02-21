@@ -15,7 +15,7 @@ function AboutPage() {
 				<div className="container mx-auto px-4">
 					<div className="max-w-3xl mx-auto text-center">
 						<h1 className="text-4xl font-bold text-gray-900 mb-4">
-							About SmartTrack
+							About HallGuardian
 						</h1>
 						<p className="text-lg text-gray-600">
 							We're on a mission to modernize school attendance tracking while
@@ -36,7 +36,7 @@ function AboutPage() {
 									<div>
 										<h2 className="text-2xl font-bold text-gray-900 mb-3">Our Mission</h2>
 										<p className="text-lg text-gray-700 leading-relaxed">
-											SmartTrack was founded by educators and technologists who saw firsthand
+											HallGuardian was founded by educators and technologists who saw firsthand
 											the challenges schools face with outdated attendance systems. We believe
 											that tracking student attendance shouldn't require expensive hardware,
 											complex training, or compromise on privacy. Our mission is to provide
@@ -84,7 +84,7 @@ function AboutPage() {
 								<Lightbulb className="size-12 text-blue-600 mb-3" />
 								<CardTitle>Continuous Innovation</CardTitle>
 								<CardDescription>
-									We're constantly improving SmartTrack with new features, better security,
+									We're constantly improving HallGuardian with new features, better security,
 									and enhanced usability based on the latest educational technology research.
 								</CardDescription>
 							</CardHeader>
@@ -102,7 +102,7 @@ function AboutPage() {
 						</h2>
 						<div className="space-y-6 text-gray-700">
 							<p className="text-lg">
-								SmartTrack began in 2024 when our founding team—former teachers, school
+								HallGuardian began in 2024 when our founding team—former teachers, school
 								administrators, and software engineers—came together with a shared frustration.
 								Schools were spending tens of thousands of dollars on complex attendance systems
 								that required dedicated hardware, extensive training, and often failed to deliver
@@ -114,7 +114,7 @@ function AboutPage() {
 								we set out to build a solution that would be both powerful and simple.
 							</p>
 							<p className="text-lg">
-								Today, SmartTrack serves hundreds of schools across the country, helping track
+								Today, HallGuardian serves hundreds of schools across the country, helping track
 								millions of student check-ins each month. But we're just getting started. We're
 								committed to continually improving our platform, expanding our features, and
 								supporting schools in their mission to provide the best possible education for
@@ -146,7 +146,7 @@ function AboutPage() {
 							<div className="bg-white p-6 rounded-lg">
 								<div className="text-5xl mb-4">🏫</div>
 								<h3 className="font-semibold text-gray-900 mb-2">500+</h3>
-								<p className="text-sm text-gray-600">Schools using SmartTrack</p>
+								<p className="text-sm text-gray-600">Schools using HallGuardian</p>
 							</div>
 							<div className="bg-white p-6 rounded-lg">
 								<div className="text-5xl mb-4">🔒</div>
@@ -163,10 +163,10 @@ function AboutPage() {
 				<div className="container mx-auto px-4">
 					<div className="max-w-3xl mx-auto text-center">
 						<h2 className="text-3xl font-bold text-gray-900 mb-4">
-							Join the SmartTrack Community
+							Join the HallGuardian Community
 						</h2>
 						<p className="text-lg text-gray-600 mb-8">
-							Discover how SmartTrack can help your school modernize attendance tracking
+							Discover how HallGuardian can help your school modernize attendance tracking
 							while keeping student privacy at the forefront.
 						</p>
 						<Link to="/contact">
