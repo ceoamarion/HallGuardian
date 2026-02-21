@@ -63,7 +63,7 @@ function PricingPage() {
 								</ul>
 								<Link to="/contact" className="w-full">
 									<Button variant="outline" className="w-full py-6 text-lg rounded-xl border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors">
-										Contact Sales
+										Create Account & Request Demo
 									</Button>
 								</Link>
 							</CardContent>
@@ -108,7 +108,7 @@ function PricingPage() {
 									</ul>
 									<Link to="/contact" className="w-full">
 										<Button className="w-full py-6 text-lg rounded-xl bg-blue-700 hover:bg-blue-800 text-white shadow-sm transition-colors">
-											Get District Ready
+											Create Account & Request Demo
 										</Button>
 									</Link>
 								</CardContent>
@@ -153,7 +153,7 @@ function PricingPage() {
 								</p>
 								<Link to="/contact" className="w-full mt-auto">
 									<Button variant="outline" className="w-full py-6 text-lg rounded-xl border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors">
-										Contact Sales
+										Create Account & Request Demo
 									</Button>
 								</Link>
 							</CardContent>
@@ -211,7 +211,7 @@ function PricingPage() {
 					<div className="mt-16 text-center">
 						<Link to="/contact">
 							<Button size="lg" className="text-lg px-8 py-6 rounded-xl bg-blue-700 hover:bg-blue-800 text-white shadow-sm transition-all">
-								Ready to protect your hallways? Request a demo
+								Ready to protect your hallways? Create Account & Request Demo
 							</Button>
 						</Link>
 					</div>

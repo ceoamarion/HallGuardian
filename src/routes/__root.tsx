@@ -24,7 +24,7 @@ function Root() {
 								Pricing
 							</Link>
 							<Link to="/contact">
-								<Button className="rounded-xl px-6 bg-blue-700 hover:bg-blue-800 text-white shadow-sm">Request a Demo</Button>
+								<Button className="rounded-xl px-6 bg-blue-700 hover:bg-blue-800 text-white shadow-sm">Create Account & Request Demo</Button>
 							</Link>
 						</div>
 					</nav>
@@ -64,7 +64,7 @@ function Root() {
 						<div>
 							<h3 className="font-semibold text-gray-900 mb-3">Get Started</h3>
 							<Link to="/contact">
-								<Button className="w-full">Request a Demo</Button>
+								<Button className="w-full">Create Account & Request Demo</Button>
 							</Link>
 						</div>
 					</div>

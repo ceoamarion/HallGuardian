@@ -23,7 +23,7 @@ function HomePage() {
 						<div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-10">
 							<Link to="/contact">
 								<Button size="lg" className="text-lg px-8 py-6 rounded-xl bg-blue-700 hover:bg-blue-800 text-white shadow-sm hover:shadow-md transition-all">
-									Request a Demo
+									Create Account & Request Demo
 								</Button>
 							</Link>
 							<Link to="/pricing">
@@ -207,7 +207,7 @@ function HomePage() {
 						</p>
 						<Link to="/contact">
 							<Button size="lg" className="text-lg px-8 py-6 rounded-xl bg-white text-blue-900 hover:bg-slate-100 shadow-md">
-								Schedule Your Demo
+								Create Account & Request Demo
 							</Button>
 						</Link>
 					</div>

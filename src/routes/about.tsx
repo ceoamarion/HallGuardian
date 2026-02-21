@@ -171,7 +171,7 @@ function AboutPage() {
 						</p>
 						<Link to="/contact">
 							<Button size="lg" className="text-lg px-8 py-6">
-								Request a Demo
+								Create Account & Request Demo
 							</Button>
 						</Link>
 					</div>
