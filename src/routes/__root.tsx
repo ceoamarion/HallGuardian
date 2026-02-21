@@ -20,23 +20,11 @@ function Root() {
 							<span>HallGuardian</span>
 						</Link>
 						<div className="hidden md:flex items-center gap-6">
-							<Link to="/how-it-works" className="text-gray-700 hover:text-blue-600 transition-colors">
-								How It Works
-							</Link>
-							<Link to="/features" className="text-gray-700 hover:text-blue-600 transition-colors">
-								Features
-							</Link>
-							<Link to="/pricing" className="text-gray-700 hover:text-blue-600 transition-colors">
+							<Link to="/pricing" className="text-slate-700 font-medium hover:text-blue-700 transition-colors">
 								Pricing
 							</Link>
-							<Link to="/privacy" className="text-gray-700 hover:text-blue-600 transition-colors">
-								Privacy & Ethics
-							</Link>
-							<Link to="/about" className="text-gray-700 hover:text-blue-600 transition-colors">
-								About Us
-							</Link>
 							<Link to="/contact">
-								<Button>Request a Demo</Button>
+								<Button className="rounded-xl px-6 bg-blue-700 hover:bg-blue-800 text-white shadow-sm">Request a Demo</Button>
 							</Link>
 						</div>
 					</nav>
