@@ -95,7 +95,8 @@ function RegisterPage() {
                 body: JSON.stringify({
                     email: form.email.trim().toLowerCase(),
                     password: form.password,
-                    role: "ADMIN",
+                    fullName: form.name.trim(),
+                    role: "SCHOOL_ADMIN",
                     schoolId: null,
                 }),
             });
@@ -112,6 +113,9 @@ function RegisterPage() {
             if (loginRes.ok) {
                 localStorage.setItem("hg_token", loginData.token);
                 localStorage.setItem("hg_user", JSON.stringify(loginData.user));
+                // Prefer name from backend, fall back to form input
+                localStorage.setItem("hg_name", loginData.user?.fullName || form.name.trim());
+                localStorage.setItem("hg_school", form.schoolName.trim());
             }
 
             navigate({ to: "/dashboard" });
