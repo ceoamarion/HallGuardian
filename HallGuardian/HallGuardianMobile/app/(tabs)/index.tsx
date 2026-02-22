@@ -11,7 +11,7 @@ import {
 import { CameraView, useCameraPermissions } from "expo-camera";
 
 // ⚠️ If you're on your phone, change this to your computer's IP
-const API_URL = "https://qr-app-um5g.onrender.com";
+const API_URL = "http://localhost:4000";
 
 export default function HomeScreen() {
   const [healthResult, setHealthResult] = useState<string | null>(null);

@@ -1,3 +1,0 @@
--- This file is kept in sync with HallGuardian/schema.sql.
--- The authoritative copy applied by the server is HallGuardian/schema.sql.
--- See that file for the full schema.
