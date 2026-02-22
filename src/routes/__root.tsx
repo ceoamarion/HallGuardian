@@ -1,16 +1,12 @@
-import { createRouter, createHashHistory } from "@tanstack/react-router";
+import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { FloatingBanner } from "@/components/FloatingBanner";
 import { Button } from "@/components/ui/button";
 import { GraduationCap, LogOut, LayoutDashboard, Code2, User } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { UsersRole } from "@/sdk/database/orm/orm_users";
-import { routeTree } from "./routeTree.gen";
 
-export const router = createRouter({
-  routeTree,
-  history: createHashHistory(),
+export const Route = createRootRoute({
+	component: Root,
 });
 
 function Root() {
@@ -21,26 +17,14 @@ function Root() {
 					<nav className="flex items-center justify-between">
 						<Link to="/" className="flex items-center gap-2 text-xl font-bold text-blue-600">
 							<GraduationCap className="size-8" />
-							<span>SmartTrack</span>
+							<span>HallGuardian</span>
 						</Link>
 						<div className="hidden md:flex items-center gap-6">
-							<Link to="/how-it-works" className="text-gray-700 hover:text-blue-600 transition-colors">
-								How It Works
-							</Link>
-							<Link to="/features" className="text-gray-700 hover:text-blue-600 transition-colors">
-								Features
-							</Link>
-							<Link to="/pricing" className="text-gray-700 hover:text-blue-600 transition-colors">
+							<Link to="/pricing" className="text-slate-700 font-medium hover:text-blue-700 transition-colors">
 								Pricing
 							</Link>
-							<Link to="/privacy" className="text-gray-700 hover:text-blue-600 transition-colors">
-								Privacy & Ethics
-							</Link>
-							<Link to="/about" className="text-gray-700 hover:text-blue-600 transition-colors">
-								About Us
-							</Link>
 							<Link to="/contact">
-								<Button>Request a Demo</Button>
+								<Button className="rounded-xl px-6 bg-blue-700 hover:bg-blue-800 text-white shadow-sm">Create Account & Request Demo</Button>
 							</Link>
 						</div>
 					</nav>
@@ -55,7 +39,7 @@ function Root() {
 						<div>
 							<div className="flex items-center gap-2 text-lg font-bold text-blue-600 mb-4">
 								<GraduationCap className="size-6" />
-								<span>SmartTrack</span>
+								<span>HallGuardian</span>
 							</div>
 							<p className="text-gray-600 text-sm">
 								Modern attendance and movement tracking for schools
@@ -80,12 +64,12 @@ function Root() {
 						<div>
 							<h3 className="font-semibold text-gray-900 mb-3">Get Started</h3>
 							<Link to="/contact">
-								<Button className="w-full">Request a Demo</Button>
+								<Button className="w-full">Create Account & Request Demo</Button>
 							</Link>
 						</div>
 					</div>
 					<div className="mt-8 pt-8 border-t border-gray-200 text-center text-sm text-gray-600">
-						<p>&copy; 2026 SmartTrack. All rights reserved.</p>
+						<p>&copy; 2026 HallGuardian. All rights reserved.</p>
 					</div>
 				</div>
 			</footer>

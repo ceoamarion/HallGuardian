@@ -20,7 +20,7 @@ function PrivacyPage() {
 						</h1>
 						<p className="text-lg text-gray-600">
 							Student privacy and data protection are at the core of everything we do.
-							SmartTrack is built to exceed federal compliance standards.
+							HallGuardian is built to exceed federal compliance standards.
 						</p>
 					</div>
 				</div>
@@ -150,7 +150,7 @@ function PrivacyPage() {
 								</AccordionTrigger>
 								<AccordionContent>
 									<p className="text-gray-600">
-										SmartTrack collects only essential data: student ID, timestamp of scan,
+										HallGuardian collects only essential data: student ID, timestamp of scan,
 										location code, and attendance status. We do NOT collect: biometric data,
 										location tracking outside of school premises, browsing history, or any
 										data unrelated to attendance tracking.
@@ -163,7 +163,7 @@ function PrivacyPage() {
 								</AccordionTrigger>
 								<AccordionContent>
 									<p className="text-gray-600">
-										Your school owns all student data. SmartTrack is a data processor, not a
+										Your school owns all student data. HallGuardian is a data processor, not a
 										data owner. You can export or delete your data at any time. If you
 										terminate your contract, all data is securely deleted within 30 days
 										unless you request otherwise.

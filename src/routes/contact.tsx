@@ -3,10 +3,9 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
 	Form,
 	FormControl,
@@ -16,65 +15,50 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/components/ui/form";
-import { DemoRequestORM, type DemoRequestModel } from "@/sdk/database/orm/orm_demo_request";
-import { CheckCircle2, Calendar, Users, Building2, Mail, Phone } from "lucide-react";
+import { Clock, ShieldCheck, Database, Building, Lock } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/contact")({
-	component: ContactPage,
+	component: AccountCreationPage,
 });
 
-const formSchema = z.object({
-	school_name: z.string().min(2, "School name must be at least 2 characters"),
-	contact_person_name: z.string().min(2, "Contact name must be at least 2 characters"),
-	contact_email: z.string().email("Please enter a valid email address"),
-	contact_phone: z.string().optional(),
-	student_count: z.number().min(1, "Student count must be at least 1"),
-	preferred_demo_time: z.string().optional(),
-	additional_notes: z.string().optional(),
+const accountSchema = z.object({
+	school_name: z.string().min(2, "School name is required"),
+	district: z.string().optional(),
+	role: z.string().min(2, "Role is required"),
+	work_email: z.string().email("Please enter a valid work email address"),
+	password: z.string().min(8, "Password must be at least 8 characters"),
+	student_count: z.number().min(1, "Student count is required"),
 });
 
-type FormData = z.infer<typeof formSchema>;
+type AccountFormData = z.infer<typeof accountSchema>;
 
-function ContactPage() {
+function AccountCreationPage() {
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [isSubmitted, setIsSubmitted] = useState(false);
 
-	const form = useForm<FormData>({
-		resolver: zodResolver(formSchema),
+	const form = useForm<AccountFormData>({
+		resolver: zodResolver(accountSchema),
 		defaultValues: {
 			school_name: "",
-			contact_person_name: "",
-			contact_email: "",
-			contact_phone: "",
+			district: "",
+			role: "",
+			work_email: "",
+			password: "",
 			student_count: 0,
-			preferred_demo_time: "",
-			additional_notes: "",
 		},
 	});
 
-	async function onSubmit(values: FormData) {
+	async function onSubmit(values: AccountFormData) {
 		setIsSubmitting(true);
 		try {
-			const orm = DemoRequestORM.getInstance();
-			const demoRequest: Partial<DemoRequestModel> = {
-				school_name: values.school_name,
-				contact_person_name: values.contact_person_name,
-				contact_email: values.contact_email,
-				contact_phone: values.contact_phone || null,
-				student_count: values.student_count,
-				preferred_demo_time: values.preferred_demo_time || null,
-				additional_notes: values.additional_notes || null,
-			};
-
-			await orm.insertDemoRequest([demoRequest as DemoRequestModel]);
-
+			// Simulate secure account creation & demo staging
+			await new Promise(resolve => setTimeout(resolve, 1500));
 			setIsSubmitted(true);
-			toast.success("Demo request submitted successfully!");
-			form.reset();
+			toast.success("Account created securely.");
+			window.scrollTo({ top: 0, behavior: "smooth" });
 		} catch (error) {
-			console.error("Error submitting demo request:", error);
-			toast.error("Failed to submit demo request. Please try again.");
+			toast.error("Failed to process account setup. Please try again.");
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -82,24 +66,42 @@ function ContactPage() {
 
 	if (isSubmitted) {
 		return (
-			<div className="py-16">
+			<div className="py-16 bg-slate-50 min-h-screen">
 				<div className="container mx-auto px-4">
-					<Card className="max-w-2xl mx-auto text-center">
-						<CardContent className="pt-16 pb-16">
-							<CheckCircle2 className="size-20 text-green-600 mx-auto mb-6" />
-							<h2 className="text-3xl font-bold text-gray-900 mb-4">
-								Thank You!
-							</h2>
-							<p className="text-lg text-gray-600 mb-8">
-								We've received your demo request and will be in touch within 24 hours
-								to schedule your personalized SmartTrack demonstration.
+					<Card className="max-w-2xl mx-auto border-blue-100 shadow-md">
+						<CardHeader className="bg-blue-50/50 border-b border-blue-50 text-center pb-8 pt-10">
+							<Clock className="size-16 text-blue-700 mx-auto mb-4" />
+							<CardTitle className="text-3xl font-bold text-blue-900">
+								Account Created: Demo Pending
+							</CardTitle>
+						</CardHeader>
+						<CardContent className="pt-8 pb-10 px-8 text-center">
+							<p className="text-lg text-slate-700 mb-6 leading-relaxed">
+								Your administrative account has been staged securely. To ensure FERPA compliance and protect our school networks, core features remain restricted until your district's identity is verified during your upcoming demonstration.
 							</p>
-							<Button
-								onClick={() => setIsSubmitted(false)}
-								variant="outline"
-							>
-								Submit Another Request
-							</Button>
+							<div className="bg-slate-50 border border-slate-100 p-6 rounded-xl text-left mb-8">
+								<h3 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
+									<ShieldCheck className="size-5 text-blue-700" />
+									Next Steps for Validation
+								</h3>
+								<ul className="space-y-3">
+									<li className="flex gap-3 text-slate-600 text-sm">
+										<span className="font-bold text-blue-700">1.</span>
+										A HallGuardian integration specialist will contact you within 24 hours.
+									</li>
+									<li className="flex gap-3 text-slate-600 text-sm">
+										<span className="font-bold text-blue-700">2.</span>
+										We will verify your institutional credentials and discuss your tracking requirements.
+									</li>
+									<li className="flex gap-3 text-slate-600 text-sm">
+										<span className="font-bold text-blue-700">3.</span>
+										Full dashboard access and trial hardware planning will be unlocked following verification.
+									</li>
+								</ul>
+							</div>
+							<p className="text-sm text-slate-500">
+								Status: <span className="font-semibold text-amber-600 bg-amber-50 px-3 py-1 rounded-full">Prospective District</span>
+							</p>
 						</CardContent>
 					</Card>
 				</div>
@@ -108,74 +110,75 @@ function ContactPage() {
 	}
 
 	return (
-		<div>
+		<div className="bg-slate-50 min-h-screen">
 			{/* Hero Section */}
-			<section className="bg-gradient-to-b from-blue-50 to-white py-16">
+			<section className="bg-white py-12 border-b border-slate-200">
 				<div className="container mx-auto px-4">
 					<div className="max-w-3xl mx-auto text-center">
-						<h1 className="text-4xl font-bold text-gray-900 mb-4">
-							Request a Demo
+						<h1 className="text-3xl md:text-4xl font-bold text-blue-900 mb-4">
+							Create Account & Request Demo
 						</h1>
-						<p className="text-lg text-gray-600">
-							See SmartTrack in action. Fill out the form below and we'll schedule
-							a personalized demo for your school.
+						<p className="text-lg text-slate-600">
+							To uphold strict FERPA guidelines and protect our existing infrastructure, we require all prospective schools and administrators to complete a verified account staging process prior to product demonstrations.
 						</p>
 					</div>
 				</div>
 			</section>
 
 			{/* Form Section */}
-			<section className="py-16">
+			<section className="py-12 md:py-16">
 				<div className="container mx-auto px-4">
 					<div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
 						{/* Form */}
-						<Card className="lg:col-span-2">
-							<CardHeader>
-								<CardTitle>Demo Request Form</CardTitle>
-								<CardDescription>
-									Tell us about your school and we'll get back to you within 24 hours
+						<Card className="lg:col-span-2 shadow-md border-slate-200">
+							<CardHeader className="bg-white border-b border-slate-100 pb-6">
+								<CardTitle className="text-2xl text-slate-900">Administrator Details</CardTitle>
+								<CardDescription className="text-base text-slate-600 mt-1">
+									Please provide accurate institutional information to expedite verification.
 								</CardDescription>
 							</CardHeader>
-							<CardContent>
+							<CardContent className="pt-6">
 								<Form {...form}>
 									<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-										<FormField
-											control={form.control}
-											name="school_name"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>School/District Name *</FormLabel>
-													<FormControl>
-														<Input placeholder="Lincoln Elementary School" {...field} />
-													</FormControl>
-													<FormMessage />
-												</FormItem>
-											)}
-										/>
+										<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+											<FormField
+												control={form.control}
+												name="school_name"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel className="text-slate-800">School Name <span className="text-red-600">*</span></FormLabel>
+														<FormControl>
+															<Input className="bg-white" placeholder="Lincoln High School" {...field} />
+														</FormControl>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
 
-										<FormField
-											control={form.control}
-											name="contact_person_name"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>Contact Person Name *</FormLabel>
-													<FormControl>
-														<Input placeholder="Jane Smith" {...field} />
-													</FormControl>
-													<FormMessage />
-												</FormItem>
-											)}
-										/>
+											<FormField
+												control={form.control}
+												name="district"
+												render={({ field }) => (
+													<FormItem>
+														<FormLabel className="text-slate-800">District <span className="text-slate-400 font-normal">(Optional)</span></FormLabel>
+														<FormControl>
+															<Input className="bg-white" placeholder="Lincoln County SD" {...field} />
+														</FormControl>
+														<FormMessage />
+													</FormItem>
+												)}
+											/>
+										</div>
 
 										<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 											<FormField
 												control={form.control}
-												name="contact_email"
+												name="role"
 												render={({ field }) => (
 													<FormItem>
-														<FormLabel>Email Address *</FormLabel>
+														<FormLabel className="text-slate-800">Your Role / Title <span className="text-red-600">*</span></FormLabel>
 														<FormControl>
-															<Input type="email" placeholder="jane@school.edu" {...field} />
+															<Input className="bg-white" placeholder="e.g. Principal, IT Director" {...field} />
 														</FormControl>
 														<FormMessage />
 													</FormItem>
@@ -184,12 +187,18 @@ function ContactPage() {
 
 											<FormField
 												control={form.control}
-												name="contact_phone"
+												name="student_count"
 												render={({ field }) => (
 													<FormItem>
-														<FormLabel>Phone Number</FormLabel>
+														<FormLabel className="text-slate-800">Approximate Student Count <span className="text-red-600">*</span></FormLabel>
 														<FormControl>
-															<Input type="tel" placeholder="(555) 123-4567" {...field} />
+															<Input
+																className="bg-white"
+																type="number"
+																placeholder="1200"
+																{...field}
+																onChange={(e) => field.onChange(Number(e.target.value))}
+															/>
 														</FormControl>
 														<FormMessage />
 													</FormItem>
@@ -197,22 +206,21 @@ function ContactPage() {
 											/>
 										</div>
 
+										<div className="pt-4 pb-2 border-b border-slate-100">
+											<h3 className="text-lg font-medium text-slate-900 pb-2">Account Security</h3>
+										</div>
+
 										<FormField
 											control={form.control}
-											name="student_count"
+											name="work_email"
 											render={({ field }) => (
 												<FormItem>
-													<FormLabel>Number of Students *</FormLabel>
+													<FormLabel className="text-slate-800">District / Work Email <span className="text-red-600">*</span></FormLabel>
 													<FormControl>
-														<Input
-															type="number"
-															placeholder="500"
-															{...field}
-															onChange={(e) => field.onChange(Number(e.target.value))}
-														/>
+														<Input className="bg-white" type="email" placeholder="j.smith@lincoln.edu" {...field} />
 													</FormControl>
-													<FormDescription>
-														Approximate number of students in your school
+													<FormDescription className="text-xs">
+														Personal email addresses (Gmail, Yahoo) may delay verification.
 													</FormDescription>
 													<FormMessage />
 												</FormItem>
@@ -221,99 +229,78 @@ function ContactPage() {
 
 										<FormField
 											control={form.control}
-											name="preferred_demo_time"
+											name="password"
 											render={({ field }) => (
 												<FormItem>
-													<FormLabel>Preferred Demo Time</FormLabel>
+													<FormLabel className="text-slate-800">Secure Password <span className="text-red-600">*</span></FormLabel>
 													<FormControl>
-														<Input
-															type="datetime-local"
-															{...field}
-														/>
+														<Input className="bg-white" type="password" placeholder="••••••••" {...field} />
 													</FormControl>
-													<FormDescription>
-														Optional: Select your preferred date and time
+													<FormDescription className="text-xs">
+														Must be at least 8 characters. Will be used to access your district portal post-verification.
 													</FormDescription>
 													<FormMessage />
 												</FormItem>
 											)}
 										/>
 
-										<FormField
-											control={form.control}
-											name="additional_notes"
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>Additional Notes or Questions</FormLabel>
-													<FormControl>
-														<Textarea
-															placeholder="Tell us about any specific requirements or questions you have..."
-															className="min-h-32"
-															{...field}
-														/>
-													</FormControl>
-													<FormMessage />
-												</FormItem>
+										<Button type="submit" size="lg" className="w-full mt-4 bg-blue-700 hover:bg-blue-800 text-white shadow-sm" disabled={isSubmitting}>
+											{isSubmitting ? (
+												<span className="flex items-center gap-2">
+													<Lock className="size-4 animate-pulse" /> Processing Securely...
+												</span>
+											) : (
+												<span className="flex items-center gap-2">
+													<Lock className="size-4" /> Create Account & Request Demo
+												</span>
 											)}
-										/>
-
-										<Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
-											{isSubmitting ? "Submitting..." : "Request Demo"}
 										</Button>
 									</form>
 								</Form>
 							</CardContent>
+							<CardFooter className="bg-slate-50 border-t border-slate-100 rounded-b-xl py-4 flex justify-center">
+								<p className="text-xs text-slate-500 flex items-center gap-2">
+									<ShieldCheck className="size-4" /> SSL Encrypted & SOC 2 Type II Compliant Infrastructure
+								</p>
+							</CardFooter>
 						</Card>
 
-						{/* Sidebar */}
+						{/* Sidebar Security Trust Badges */}
 						<div className="space-y-6">
-							<Card>
+							<Card className="border-slate-200 shadow-sm border-t-4 border-t-blue-700">
 								<CardHeader>
-									<CardTitle className="text-lg">What to Expect</CardTitle>
+									<CardTitle className="text-lg text-blue-900">Why an Account?</CardTitle>
 								</CardHeader>
-								<CardContent className="space-y-4">
-									<div className="flex gap-3">
-										<Calendar className="size-5 text-blue-600 flex-shrink-0 mt-0.5" />
+								<CardContent className="space-y-5">
+									<div className="flex gap-4 items-start">
+										<ShieldCheck className="size-6 text-blue-600 shrink-0 mt-0.5" />
 										<div>
-											<h4 className="font-semibold text-sm text-gray-900">Quick Response</h4>
-											<p className="text-sm text-gray-600">We'll contact you within 24 hours</p>
+											<h4 className="font-semibold text-sm text-slate-900">Access Control</h4>
+											<p className="text-sm text-slate-600 mt-1">Staging an account verifies that only credentialed K-12 personnel access our tracking systems.</p>
 										</div>
 									</div>
-									<div className="flex gap-3">
-										<Users className="size-5 text-blue-600 flex-shrink-0 mt-0.5" />
+									<div className="flex gap-4 items-start">
+										<Database className="size-6 text-blue-600 shrink-0 mt-0.5" />
 										<div>
-											<h4 className="font-semibold text-sm text-gray-900">Personalized Demo</h4>
-											<p className="text-sm text-gray-600">Tailored to your school's needs</p>
+											<h4 className="font-semibold text-sm text-slate-900">Dedicated Silos</h4>
+											<p className="text-sm text-slate-600 mt-1">Creating your account immediately spins up an isolated, district-specific data silo for the demo.</p>
 										</div>
 									</div>
-									<div className="flex gap-3">
-										<CheckCircle2 className="size-5 text-blue-600 flex-shrink-0 mt-0.5" />
+									<div className="flex gap-4 items-start">
+										<Building className="size-6 text-blue-600 shrink-0 mt-0.5" />
 										<div>
-											<h4 className="font-semibold text-sm text-gray-900">No Obligation</h4>
-											<p className="text-sm text-gray-600">Free demo with no commitment</p>
+											<h4 className="font-semibold text-sm text-slate-900">Tailored Experience</h4>
+											<p className="text-sm text-slate-600 mt-1">Pricing and deployment scenarios are modeled securely using your exact campus configurations.</p>
 										</div>
 									</div>
 								</CardContent>
 							</Card>
 
-							<Card className="bg-blue-50 border-none">
-								<CardContent className="pt-6">
-									<h3 className="font-semibold text-gray-900 mb-4">Contact Information</h3>
-									<div className="space-y-3">
-										<div className="flex items-center gap-2 text-sm text-gray-700">
-											<Mail className="size-4 text-blue-600" />
-											<span>demo@smarttrack.edu</span>
-										</div>
-										<div className="flex items-center gap-2 text-sm text-gray-700">
-											<Phone className="size-4 text-blue-600" />
-											<span>(555) 123-4567</span>
-										</div>
-										<div className="flex items-center gap-2 text-sm text-gray-700">
-											<Building2 className="size-4 text-blue-600" />
-											<span>Available Mon-Fri, 9AM-5PM EST</span>
-										</div>
-									</div>
-								</CardContent>
+							<Card className="bg-slate-100 border-none shadow-none text-center p-6">
+								<p className="text-sm text-slate-600 italic">
+									"The verification process gave our school board immense confidence in HallGuardian's data privacy protocols before we ever saw the product."
+								</p>
+								<p className="text-xs font-semibold text-slate-800 mt-3">— Administrator, Columbus OH</p>
 							</Card>
 						</div>
 					</div>

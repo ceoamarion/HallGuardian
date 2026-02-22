@@ -249,11 +249,11 @@ function FeaturesPage() {
 							Experience All Features in a Live Demo
 						</h2>
 						<p className="text-lg text-gray-600 mb-8">
-							See how SmartTrack's powerful features can transform attendance management at your school.
+							See how HallGuardian's powerful features can transform attendance management at your school.
 						</p>
 						<Link to="/contact">
 							<Button size="lg" className="text-lg px-8 py-6">
-								Request a Demo
+								Create Account & Request Demo
 							</Button>
 						</Link>
 					</div>

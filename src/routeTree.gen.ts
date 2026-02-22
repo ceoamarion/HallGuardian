@@ -8,118 +8,50 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-// Import Routes
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as HowItWorksRouteImport } from './routes/how-it-works'
+import { Route as FeaturesRouteImport } from './routes/features'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as IndexRouteImport } from './routes/index'
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as PrivacyImport } from './routes/privacy'
-import { Route as PricingImport } from './routes/pricing'
-import { Route as HowItWorksImport } from './routes/how-it-works'
-import { Route as FeaturesImport } from './routes/features'
-import { Route as ContactImport } from './routes/contact'
-import { Route as AboutImport } from './routes/about'
-import { Route as IndexImport } from './routes/index'
-
-// Create/Update Routes
-
-const PrivacyRoute = PrivacyImport.update({
+const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const PricingRoute = PricingImport.update({
+const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
   path: '/pricing',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const HowItWorksRoute = HowItWorksImport.update({
+const HowItWorksRoute = HowItWorksRouteImport.update({
   id: '/how-it-works',
   path: '/how-it-works',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const FeaturesRoute = FeaturesImport.update({
+const FeaturesRoute = FeaturesRouteImport.update({
   id: '/features',
   path: '/features',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const ContactRoute = ContactImport.update({
+const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const AboutRoute = AboutImport.update({
+const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const IndexRoute = IndexImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-// Populate the FileRoutesByPath interface
-
-declare module '@tanstack/react-router' {
-  interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutImport
-      parentRoute: typeof rootRoute
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactImport
-      parentRoute: typeof rootRoute
-    }
-    '/features': {
-      id: '/features'
-      path: '/features'
-      fullPath: '/features'
-      preLoaderRoute: typeof FeaturesImport
-      parentRoute: typeof rootRoute
-    }
-    '/how-it-works': {
-      id: '/how-it-works'
-      path: '/how-it-works'
-      fullPath: '/how-it-works'
-      preLoaderRoute: typeof HowItWorksImport
-      parentRoute: typeof rootRoute
-    }
-    '/pricing': {
-      id: '/pricing'
-      path: '/pricing'
-      fullPath: '/pricing'
-      preLoaderRoute: typeof PricingImport
-      parentRoute: typeof rootRoute
-    }
-    '/privacy': {
-      id: '/privacy'
-      path: '/privacy'
-      fullPath: '/privacy'
-      preLoaderRoute: typeof PrivacyImport
-      parentRoute: typeof rootRoute
-    }
-  }
-}
-
-// Create and export the route tree
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -130,7 +62,6 @@ export interface FileRoutesByFullPath {
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
 }
-
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
@@ -140,9 +71,8 @@ export interface FileRoutesByTo {
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
 }
-
 export interface FileRoutesById {
-  __root__: typeof rootRoute
+  __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
@@ -151,7 +81,6 @@ export interface FileRoutesById {
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
 }
-
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
@@ -182,7 +111,6 @@ export interface FileRouteTypes {
     | '/privacy'
   fileRoutesById: FileRoutesById
 }
-
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
@@ -191,6 +119,60 @@ export interface RootRouteChildren {
   HowItWorksRoute: typeof HowItWorksRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
+}
+
+declare module '@tanstack/react-router' {
+  interface FileRoutesByPath {
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/how-it-works': {
+      id: '/how-it-works'
+      path: '/how-it-works'
+      fullPath: '/how-it-works'
+      preLoaderRoute: typeof HowItWorksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/features': {
+      id: '/features'
+      path: '/features'
+      fullPath: '/features'
+      preLoaderRoute: typeof FeaturesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+  }
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -202,47 +184,6 @@ const rootRouteChildren: RootRouteChildren = {
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
 }
-
-export const routeTree = rootRoute
+export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-/* ROUTE_MANIFEST_START
-{
-  "routes": {
-    "__root__": {
-      "filePath": "__root.tsx",
-      "children": [
-        "/",
-        "/about",
-        "/contact",
-        "/features",
-        "/how-it-works",
-        "/pricing",
-        "/privacy"
-      ]
-    },
-    "/": {
-      "filePath": "index.tsx"
-    },
-    "/about": {
-      "filePath": "about.tsx"
-    },
-    "/contact": {
-      "filePath": "contact.tsx"
-    },
-    "/features": {
-      "filePath": "features.tsx"
-    },
-    "/how-it-works": {
-      "filePath": "how-it-works.tsx"
-    },
-    "/pricing": {
-      "filePath": "pricing.tsx"
-    },
-    "/privacy": {
-      "filePath": "privacy.tsx"
-    }
-  }
-}
-ROUTE_MANIFEST_END */
