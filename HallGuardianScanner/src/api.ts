@@ -1,7 +1,7 @@
 // ─── HallGuardian API client ──────────────────────────────────────────────────
 // Edit BASE_URL to match your backend URL (LAN IP when testing on device)
 
-export const BASE_URL = "http://10.127.58.77:4000";
+export const BASE_URL = "http://localhost:4000";
 
 async function request<T>(
     path: string,
