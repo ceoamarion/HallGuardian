@@ -5,7 +5,8 @@
   ],
   "exclude": [
     "e2b-templates/**/*",
-    "HallGuardian/**/*"
+    "HallGuardian/**/*",
+    "HallGuardianScanner/**/*"
   ],
   "compilerOptions": {
     "target": "ES2022",
