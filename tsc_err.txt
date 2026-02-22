@@ -1,1 +1,0 @@
-src/routes/__root.tsx(7,27): error TS2307: Cannot find module './routeTree.gen' or its corresponding type declarations.
