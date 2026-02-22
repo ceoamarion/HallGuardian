@@ -13,8 +13,8 @@
     "check:safe": "timeout 20 npm run check || (echo 'Check timed out after 20 seconds' && exit 1)",
     "format": "biome check --write --unsafe",
     "format:quiet": "biome check --write --unsafe --log-level=warn",
-    "lint:radix": "grep -l -r '<SelectItem' src | xargs eslint --config config/eslint/eslint.radix.config.js",
-    "lint:mcp": "eslint src --config config/eslint/eslint.mcp.config.js",
+    "lint:radix": "eslint \"src/**/*.{ts,tsx}\" --config config/eslint/eslint.radix.config.js",
+    "lint:mcp": "eslint \"src/**/*.{ts,tsx}\" --config config/eslint/eslint.mcp.config.js",
     "lint:validate": "node config/eslint/validate-configs.js",
     "prepare": "if [ -f ./bin/setup-githooks.sh ]; then ./bin/setup-githooks.sh; fi"
   },

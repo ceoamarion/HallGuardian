@@ -1,5 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createRouter, createHashHistory, RouterProvider } from "@tanstack/react-router";
+import {
+	createHashHistory,
+	createRouter,
+	RouterProvider,
+} from "@tanstack/react-router";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 
@@ -27,14 +31,14 @@ const queryClient = new QueryClient({
 
 // Create a new router instance
 const router = createRouter({
-  routeTree,
-  history: createHashHistory(), // ✅ THIS is the fix
-  context: {},
-  defaultPreload: "intent",
-  scrollRestoration: true,
-  defaultStructuralSharing: true,
-  defaultPreloadStaleTime: 0,
-  basepath: "/", // ✅ keep it simple for GitHub Pages/custom domain
+	routeTree,
+	history: createHashHistory(), // ✅ THIS is the fix
+	context: {},
+	defaultPreload: "intent",
+	scrollRestoration: true,
+	defaultStructuralSharing: true,
+	defaultPreloadStaleTime: 0,
+	basepath: "/", // ✅ keep it simple for GitHub Pages/custom domain
 });
 
 // Register the router instance for type safety

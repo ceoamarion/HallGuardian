@@ -1,0 +1,20 @@
+commit fa5545999b3509b7475f421b30eb3230b2c31c79
+Author: AmarionAnderson <ceoamarion@gmail.com>
+Date:   Sun Feb 22 02:32:31 2026 -0500
+
+    Added Vite dependency cache files, generated route tree, and updated tsconfig.json.
+
+diff --git a/tsconfig.json b/tsconfig.json
+index 71d6d57a..dc813696 100644
+--- a/tsconfig.json
++++ b/tsconfig.json
+@@ -5,7 +5,8 @@
+   ],
+   "exclude": [
+     "e2b-templates/**/*",
+-    "HallGuardian/**/*"
++    "HallGuardian/**/*",
++    "HallGuardianScanner/**/*"
+   ],
+   "compilerOptions": {
+     "target": "ES2022",

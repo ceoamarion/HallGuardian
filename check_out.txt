@@ -1,0 +1,9 @@
+
+> check
+> tsgo --noEmit && npm run lint:radix -- --fix && npm run format
+
+
+> lint:radix
+> grep -l -r '<SelectItem' src | xargs eslint --config config/eslint/eslint.radix.config.js --fix
+
+The system cannot find the file specified.

@@ -1,0 +1,74 @@
+commit fa5545999b3509b7475f421b30eb3230b2c31c79
+Author: AmarionAnderson <ceoamarion@gmail.com>
+Date:   Sun Feb 22 02:32:31 2026 -0500
+
+    Added Vite dependency cache files, generated route tree, and updated tsconfig.json.
+
+ node_modules/.vite/deps/@hookform_resolvers_zod.js |   4 +-
+ .../.vite/deps/@hookform_resolvers_zod.js.map      |   2 +-
+ .../.vite/deps/@radix-ui_react-accordion.js        |  12 +--
+ node_modules/.vite/deps/@radix-ui_react-label.js   |  10 +-
+ .../.vite/deps/@radix-ui_react-scroll-area.js      |  12 +--
+ node_modules/.vite/deps/@radix-ui_react-slot.js    |   8 +-
+ node_modules/.vite/deps/@radix-ui_react-tabs.js    |  18 ++--
+ node_modules/.vite/deps/@tanstack_react-query.js   |   4 +-
+ .../.vite/deps/@tanstack_react-router-devtools.js  |  12 +--
+ node_modules/.vite/deps/@tanstack_react-router.js  |  10 +-
+ ...nStackRouterDevtoolsPanel-Bmws3ikM-RXQREPGO.js} |   6 +-
+ ...ckRouterDevtoolsPanel-Bmws3ikM-RXQREPGO.js.map} |   0
+ ...ingTanStackRouterDevtools-B7vy70jP-MY63GZ7F.js} |   8 +-
+ ...anStackRouterDevtools-B7vy70jP-MY63GZ7F.js.map} |   0
+ node_modules/.vite/deps/_metadata.json             | 116 ++++++++++-----------
+ node_modules/.vite/deps/chunk-44NG7CLB.js.map      |   7 --
+ .../deps/{chunk-Q4MPW7D2.js => chunk-47O7DWN5.js}  |   2 +-
+ node_modules/.vite/deps/chunk-47O7DWN5.js.map      |   7 ++
+ node_modules/.vite/deps/chunk-5GLTM4JM.js.map      |   7 --
+ .../deps/{chunk-UE6WVN25.js => chunk-77FMVBQH.js}  |   6 +-
+ node_modules/.vite/deps/chunk-77FMVBQH.js.map      |   7 ++
+ .../deps/{chunk-N5TQNJRT.js => chunk-7GCU3KPO.js}  |   8 +-
+ ...chunk-N5TQNJRT.js.map => chunk-7GCU3KPO.js.map} |   0
+ .../deps/{chunk-44NG7CLB.js => chunk-7HXCKB66.js}  |   4 +-
+ node_modules/.vite/deps/chunk-7HXCKB66.js.map      |   7 ++
+ .../deps/{chunk-JF65US4N.js => chunk-DEFG3XGQ.js}  |   4 +-
+ ...chunk-JF65US4N.js.map => chunk-DEFG3XGQ.js.map} |   0
+ .../deps/{chunk-OUJSIABN.js => chunk-EYE7376K.js}  |   4 +-
+ ...chunk-OUJSIABN.js.map => chunk-EYE7376K.js.map} |   0
+ .../deps/{chunk-HTGNN266.js => chunk-IHVQCNDS.js}  |  10 +-
+ ...chunk-HTGNN266.js.map => chunk-IHVQCNDS.js.map} |   0
+ .../deps/{chunk-5GLTM4JM.js => chunk-IWOBEF4E.js}  |   4 +-
+ node_modules/.vite/deps/chunk-IWOBEF4E.js.map      |   7 ++
+ .../deps/{chunk-UONVIQDN.js => chunk-PBBBHGKP.js}  |  10 +-
+ node_modules/.vite/deps/chunk-PBBBHGKP.js.map      |   7 ++
+ node_modules/.vite/deps/chunk-Q4MPW7D2.js.map      |   7 --
+ .../deps/{chunk-YPMV4PLI.js => chunk-RY7GF66K.js}  |   2 +-
+ node_modules/.vite/deps/chunk-RY7GF66K.js.map      |   7 ++
+ node_modules/.vite/deps/chunk-UE6WVN25.js.map      |   7 --
+ .../deps/{chunk-Y7NZGJYR.js => chunk-UIKA67QX.js}  |   6 +-
+ ...chunk-Y7NZGJYR.js.map => chunk-UIKA67QX.js.map} |   0
+ node_modules/.vite/deps/chunk-UONVIQDN.js.map      |   7 --
+ .../deps/{chunk-T7VHD2JD.js => chunk-WED4RCZQ.js}  |  10 +-
+ ...chunk-T7VHD2JD.js.map => chunk-WED4RCZQ.js.map} |   0
+ .../deps/{chunk-7DAQQ65J.js => chunk-WIBXESA2.js}  |   4 +-
+ ...chunk-7DAQQ65J.js.map => chunk-WIBXESA2.js.map} |   0
+ node_modules/.vite/deps/chunk-YPMV4PLI.js.map      |   7 --
+ .../.vite/deps/class-variance-authority.js.map     |   2 +-
+ node_modules/.vite/deps/lodash.js.map              |   2 +-
+ node_modules/.vite/deps/lucide-react.js            |   2 +-
+ node_modules/.vite/deps/lucide-react.js.map        |   2 +-
+ node_modules/.vite/deps/react-dom.js               |   4 +-
+ node_modules/.vite/deps/react-dom_client.js        |   4 +-
+ node_modules/.vite/deps/react-dom_client.js.map    |   2 +-
+ node_modules/.vite/deps/react-hook-form.js         |   4 +-
+ node_modules/.vite/deps/react.js                   |   2 +-
+ node_modules/.vite/deps/react_jsx-dev-runtime.js   |   2 +-
+ .../.vite/deps/react_jsx-dev-runtime.js.map        |   2 +-
+ node_modules/.vite/deps/react_jsx-runtime.js       |   4 +-
+ node_modules/.vite/deps/sonner.js                  |   4 +-
+ node_modules/.vite/deps/sonner.js.map              |   2 +-
+ node_modules/.vite/deps/tailwind-merge.js.map      |   2 +-
+ node_modules/.vite/deps/web-vitals.js.map          |   2 +-
+ node_modules/.vite/deps/zod.js.map                 |   2 +-
+ node_modules/.vite/deps/zustand.js                 |   2 +-
+ node_modules/.vite/deps/zustand.js.map             |   2 +-
+ tsconfig.json                                      |   3 +-
+ 67 files changed, 216 insertions(+), 215 deletions(-)
