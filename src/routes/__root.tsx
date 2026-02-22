@@ -88,7 +88,7 @@ function Root() {
 
 						{/* CTA buttons */}
 						<div style={{ display: "flex", alignItems: "center", gap: 12 }} className="hidden md:flex">
-							<Link to="/contact">
+							<Link to="/login">
 								<button
 									type="button"
 									style={{
@@ -108,7 +108,7 @@ function Root() {
 									Sign In
 								</button>
 							</Link>
-							<Link to="/contact">
+							<Link to="/register">
 								<button
 									type="button"
 									style={{
@@ -166,12 +166,12 @@ function Root() {
 							</Link>
 						))}
 						<div style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 10 }}>
-							<Link to="/contact">
+							<Link to="/login">
 								<button type="button" style={{ width: "100%", padding: "12px", borderRadius: 8, border: "1.5px solid #0369a1", background: "transparent", color: "#0369a1", fontWeight: 600, fontSize: 15, cursor: "pointer" }}>
 									Sign In
 								</button>
 							</Link>
-							<Link to="/contact">
+							<Link to="/register">
 								<button type="button" style={{ width: "100%", padding: "12px", borderRadius: 8, border: "none", background: "linear-gradient(135deg, #0369a1 0%, #0ea5e9 100%)", color: "#fff", fontWeight: 600, fontSize: 15, cursor: "pointer" }}>
 									Get Started Free
 								</button>
