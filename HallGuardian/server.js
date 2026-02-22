@@ -7,7 +7,7 @@ dotenv.config();
 import express from "express";
 import cors from "cors";
 import sqlite3pkg from "sqlite3";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import fs from "fs";
 import path from "path";
@@ -60,8 +60,47 @@ function initializeSchema() {
   const sql = fs.readFileSync(schemaPath, "utf8");
   db.exec(sql, (err) => {
     if (err) console.error("❌ Error applying schema.sql:", err);
-    else console.log("✅ schema.sql applied (or already up to date)");
+    else {
+      console.log("✅ schema.sql applied (or already up to date)");
+      seedSuperAdmin(); // ← seed platform owner account
+    }
   });
+}
+
+/**
+ * Seeds the HallGuardian platform-owner account on first startup.
+ * Set SUPER_ADMIN_PASSWORD in your .env (or Render env vars) to change the password.
+ * This is idempotent — if the account already exists it does nothing.
+ */
+async function seedSuperAdmin() {
+  const SUPER_EMAIL = process.env.SUPER_ADMIN_EMAIL || "team@hallguardian.com";
+  const SUPER_PASSWORD = process.env.SUPER_ADMIN_PASSWORD || "HallGuardian@2024!";
+
+  try {
+    // Check if already seeded
+    const existing = await get(
+      "SELECT id FROM users WHERE email = ?",
+      [SUPER_EMAIL]
+    );
+
+    if (existing) {
+      console.log(`✅ Super admin account already exists: ${SUPER_EMAIL}`);
+      return;
+    }
+
+    // Hash the password and insert
+    const hash = await bcrypt.hash(SUPER_PASSWORD, SALT_ROUNDS);
+    await run(
+      `INSERT INTO users (full_name, email, password_hash, role, school_id, district_id, is_active, email_verified)
+       VALUES (?, ?, ?, 'SUPER_ADMIN', NULL, NULL, 1, 1)`,
+      ["HallGuardian Team", SUPER_EMAIL, hash]
+    );
+
+    console.log(`🔐 Super admin seeded → ${SUPER_EMAIL}`);
+    console.log(`   Password: ${SUPER_PASSWORD}  ← change this in .env (SUPER_ADMIN_PASSWORD)`);
+  } catch (err) {
+    console.error("❌ Failed to seed super admin:", err.message);
+  }
 }
 
 /* Promisified helpers */
@@ -105,10 +144,9 @@ const allowedOrigins = [
   "https://hallguardian.com",
   "https://www.hallguardian.com",
 
-  // Add your GitHub Pages domain if you're using it:
-  // "https://liriley-prog.github.io",
-
-  // Local web dev:
+  // Local web dev (Vite uses 5173 by default, but may fall back to 3000/3001)
+  "http://localhost:3000",
+  "http://localhost:3001",
   "http://localhost:5173",
   "http://localhost:8081",
   "http://localhost:19006"
@@ -167,7 +205,9 @@ function authRequired(roles = []) {
 
     try {
       const payload = jwt.verify(token, JWT_SECRET);
-      if (roles.length && !roles.includes(payload.role)) {
+      // SUPER_ADMIN bypasses all role restrictions
+      const isSuperAdmin = payload.role === "SUPER_ADMIN";
+      if (roles.length && !isSuperAdmin && !roles.includes(payload.role)) {
         return res.status(403).json({ error: "Forbidden" });
       }
       req.user = payload; // { userId, role, schoolId }
@@ -185,7 +225,7 @@ function authRequired(roles = []) {
 // Register (create initial admin/teacher users)
 app.post("/api/auth/register", async (req, res) => {
   try {
-    const { email, password, role, schoolId } = req.body;
+    const { email, password, role, schoolId, fullName } = req.body;
 
     if (!email || !password || !role) {
       return res
@@ -198,12 +238,15 @@ app.post("/api/auth/register", async (req, res) => {
       return res.status(400).json({ error: "Email already in use" });
     }
 
+    // Derive a display name from email if not provided
+    const displayName = (fullName || "").trim() || email.split("@")[0];
+
     const hash = await bcrypt.hash(password, SALT_ROUNDS);
 
     const result = await run(
-      `INSERT INTO users (email, password_hash, role, school_id)
-       VALUES (?, ?, ?, ?)`,
-      [email, hash, role, schoolId || null]
+      `INSERT INTO users (full_name, email, password_hash, role, school_id)
+       VALUES (?, ?, ?, ?, ?)`,
+      [displayName, email, hash, role, schoolId || null]
     );
 
     res.json({ success: true, userId: result.id });
@@ -240,6 +283,7 @@ app.post("/api/auth/login", async (req, res) => {
       user: {
         id: user.id,
         email: user.email,
+        fullName: user.full_name,
         role: user.role,
         schoolId: user.school_id
       }

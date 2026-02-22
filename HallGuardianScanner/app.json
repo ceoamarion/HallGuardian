@@ -1,0 +1,54 @@
+{
+  "expo": {
+    "name": "HallGuardian Scanner",
+    "slug": "hallguardian-scanner",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0f172a"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.hallguardian.scanner",
+      "infoPlist": {
+        "NSCameraUsageDescription": "HallGuardian needs camera access to scan student QR codes for hall pass tracking.",
+        "NSPhotoLibraryUsageDescription": "Not required."
+      }
+    },
+    "android": {
+      "package": "com.hallguardian.scanner",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0f172a"
+      },
+      "permissions": [
+        "CAMERA",
+        "VIBRATE"
+      ],
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-secure-store",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "HallGuardian needs camera access to scan student QR codes for hall pass tracking."
+        }
+      ],
+      [
+        "expo-barcode-scanner",
+        {
+          "cameraPermission": "Allow HallGuardian to use the camera to scan QR codes."
+        }
+      ]
+    ]
+  }
+}
