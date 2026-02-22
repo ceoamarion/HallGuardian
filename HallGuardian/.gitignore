@@ -1,0 +1,4 @@
+node_modules
+.env
+hallguardian.db
+*.db
