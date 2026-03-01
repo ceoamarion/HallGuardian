@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: hallguardian-backend
+    runtime: node
+    plan: free          # change to starter/standard for a persistent disk
+    buildCommand: npm install
+    startCommand: node server.js
+    rootDir: HallGuardian
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4000
+      - key: JWT_SECRET
+        sync: false     # must be set manually in the Render dashboard
+      - key: SALT_ROUNDS
+        value: "10"
+      - key: DB_FILE
+        value: /var/data/hallguardian.db
+      - key: CORS_ORIGINS
+        value: https://hallguardian.com,https://www.hallguardian.com
+    disk:
+      name: hallguardian-data
+      mountPath: /var/data
+      sizeGB: 1         # free accounts: upgrade to paid for persistent disk

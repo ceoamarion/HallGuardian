@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+HallGuardian/node_modules/
+HallGuardianScanner/node_modules/
+
+# Build output
+dist/
+build/
+.vite/
+
+# Environment variables — NEVER commit real .env files
+.env
+.env.local
+.env.production
+.env.*.local
+HallGuardian/.env
+HallGuardian/.env.local
+HallGuardian/.env.production
+
+# SQLite database files — don't commit the live DB
+HallGuardian/*.db
+HallGuardian/*.db-shm
+HallGuardian/*.db-wal
+HallGuardian/*.db.bak
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/settings.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# TypeScript
+*.tsbuildinfo
+
+# Vitest / test output
+test-results/
+coverage/

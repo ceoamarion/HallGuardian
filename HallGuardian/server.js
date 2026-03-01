@@ -39,7 +39,13 @@ if (!process.env.JWT_SECRET) {
 /* SQLite setup                                                               */
 /* -------------------------------------------------------------------------- */
 const sqlite3 = sqlite3pkg.verbose();
-const dbPath = path.join(__dirname, DB_FILE);
+// Support absolute paths (e.g. /data/hallguardian.db from a Railway volume)
+// and relative paths (resolved from the server directory as before).
+const dbPath = path.isAbsolute(DB_FILE)
+  ? DB_FILE
+  : path.join(__dirname, DB_FILE);
+// Ensure the parent directory exists (important when using a volume mount)
+fs.mkdirSync(path.dirname(dbPath), { recursive: true });
 
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
@@ -140,7 +146,8 @@ app.use(express.json());
 /* -------------------------------------------------------------------------- */
 /* CORS (ONE place, BEFORE routes)                                            */
 /* -------------------------------------------------------------------------- */
-const allowedOrigins = [
+// Base allowed origins — always allowed
+const allowedOrigins = new Set([
   "https://hallguardian.com",
   "https://www.hallguardian.com",
 
@@ -149,8 +156,14 @@ const allowedOrigins = [
   "http://localhost:3001",
   "http://localhost:5173",
   "http://localhost:8081",
-  "http://localhost:19006"
-];
+  "http://localhost:19006",
+]);
+
+// Merge any additional origins from the CORS_ORIGINS env var (comma-separated)
+// Example: CORS_ORIGINS=https://hallguardian.com,https://www.hallguardian.com
+if (process.env.CORS_ORIGINS) {
+  process.env.CORS_ORIGINS.split(",").forEach(o => allowedOrigins.add(o.trim()));
+}
 
 app.use(
   cors({
@@ -159,7 +172,7 @@ app.use(
       if (!origin) return callback(null, true);
 
       // Allow known web origins
-      if (allowedOrigins.includes(origin)) return callback(null, true);
+      if (allowedOrigins.has(origin)) return callback(null, true);
 
       // Optional Expo dev origins (tunnel/LAN)
       if (
