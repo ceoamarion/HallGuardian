@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import {
   ShieldCheck, Users, Clock, LogOut, RefreshCw,
   MapPin, AlertTriangle, CheckCircle2, Sparkles, WifiOff,
+  History, BookUser, PhoneCall,
 } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard")({
@@ -26,11 +27,22 @@ function elapsed(iso: string) {
   return `${Math.floor(secs / 3600)}h ${Math.floor((secs % 3600) / 60)}m`;
 }
 
+function elapsedMs(iso: string) {
+  return Date.now() - new Date(iso).getTime();
+}
+
 function urgencyColor(iso: string) {
-  const mins = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+  const mins = Math.floor(elapsedMs(iso) / 60000);
   if (mins >= 15) return "#ef4444";
   if (mins >= 8) return "#f97316";
   return "#22c55e";
+}
+
+function urgencyLabel(iso: string) {
+  const mins = Math.floor(elapsedMs(iso) / 60000);
+  if (mins >= 15) return "OVERDUE";
+  if (mins >= 8) return "LONG";
+  return "OK";
 }
 
 function getGreeting() {
@@ -38,6 +50,38 @@ function getGreeting() {
   if (h < 12) return "Good morning";
   if (h < 17) return "Good afternoon";
   return "Good evening";
+}
+
+/** Animated progress bar showing time used vs 15-minute limit */
+function PassTimer({ iso }: { iso: string }) {
+  const mins = Math.floor(elapsedMs(iso) / 60000);
+  const pct = Math.min((mins / 15) * 100, 100);
+  const color = urgencyColor(iso);
+
+  return (
+    <div style={{ width: "100%", marginTop: 6 }}>
+      <div style={{
+        height: 4, borderRadius: 99,
+        background: "#1e293b",
+        overflow: "hidden",
+      }}>
+        <div style={{
+          height: "100%",
+          width: `${pct}%`,
+          background: color,
+          borderRadius: 99,
+          transition: "width 1s linear, background 0.5s",
+        }} />
+      </div>
+      <div style={{
+        display: "flex", justifyContent: "space-between",
+        marginTop: 3, fontSize: 10, color: "#475569",
+      }}>
+        <span>0m</span>
+        <span style={{ color }}>15m limit</span>
+      </div>
+    </div>
+  );
 }
 
 export default function DashboardPage() {
@@ -51,8 +95,9 @@ export default function DashboardPage() {
   const [apiError, setApiError] = useState(false);
   const [lastRefresh, setLastRefresh] = useState(new Date());
   const [, tick] = useState(0);
+  const [recalling, setRecalling] = useState<Record<number, boolean>>({});
 
-  // Live timers
+  // Live timers — tick every second
   useEffect(() => {
     const id = setInterval(() => tick(n => n + 1), 1000);
     return () => clearInterval(id);
@@ -72,14 +117,8 @@ export default function DashboardPage() {
     const token = localStorage.getItem("hg_token");
     const userData = localStorage.getItem("hg_user");
     if (!token || !userData) return;
-
     const u = JSON.parse(userData);
-
-    if (!u.schoolId) {
-      setNoSchool(true);
-      setLoading(false);
-      return;
-    }
+    if (!u.schoolId) { setNoSchool(true); setLoading(false); return; }
 
     try {
       const res = await fetch(`${API}/api/schools/${u.schoolId}/current-out`, {
@@ -103,17 +142,34 @@ export default function DashboardPage() {
     return () => clearInterval(id);
   }, [fetchData]);
 
-  const signOut = () => {
-    localStorage.clear();
-    navigate({ to: "/login" });
+  const handleRecall = async (studentId: number) => {
+    const token = localStorage.getItem("hg_token");
+    if (!token) return;
+    setRecalling(r => ({ ...r, [studentId]: true }));
+    try {
+      const res = await fetch(`${API}/api/students/${studentId}/recall`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      });
+      if (res.ok) await fetchData();
+    } finally {
+      setRecalling(r => ({ ...r, [studentId]: false }));
+    }
   };
 
-  const overdue = outStudents.filter(s =>
-    Math.floor((Date.now() - new Date(s.scanned_at).getTime()) / 60000) >= 15
-  );
+  const signOut = () => { localStorage.clear(); navigate({ to: "/login" }); };
 
-  // First name only for greeting
+  const overdue = outStudents.filter(s =>
+    Math.floor(elapsedMs(s.scanned_at) / 60000) >= 15
+  );
   const firstName = name.split(" ")[0] || user?.email?.split("@")[0] || "there";
+
+  const $nav: React.CSSProperties = {
+    display: "flex", alignItems: "center", gap: 6,
+    background: "none", border: "1px solid #334155", borderRadius: 8,
+    padding: "7px 14px", color: "#94a3b8", fontSize: 13,
+    cursor: "pointer", transition: "all 0.2s", textDecoration: "none",
+  };
 
   return (
     <div style={{ minHeight: "100vh", background: "#0f172a", fontFamily: "'Inter', sans-serif", color: "#e2e8f0" }}>
@@ -137,15 +193,26 @@ export default function DashboardPage() {
           {school && (
             <span style={{
               background: "#0f172a", color: "#64748b", fontSize: 11,
-              padding: "2px 10px", borderRadius: 100, border: "1px solid #334155",
-              fontWeight: 600,
+              padding: "2px 10px", borderRadius: 100, border: "1px solid #334155", fontWeight: 600,
             }}>
               {school}
             </span>
           )}
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <Link to="/passes" style={$nav}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "#0ea5e9"; (e.currentTarget as HTMLElement).style.color = "#e2e8f0"; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "#334155"; (e.currentTarget as HTMLElement).style.color = "#94a3b8"; }}
+          >
+            <History size={14} /> Pass History
+          </Link>
+          <Link to="/students" style={$nav}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "#0ea5e9"; (e.currentTarget as HTMLElement).style.color = "#e2e8f0"; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "#334155"; (e.currentTarget as HTMLElement).style.color = "#94a3b8"; }}
+          >
+            <BookUser size={14} /> Roster
+          </Link>
           <span style={{ color: "#64748b", fontSize: 13 }}>{user?.email}</span>
           <button onClick={signOut} style={{
             display: "flex", alignItems: "center", gap: 6,
@@ -169,7 +236,6 @@ export default function DashboardPage() {
           border: "1px solid #1e4976",
           position: "relative", overflow: "hidden",
         }}>
-          {/* glow orb */}
           <div style={{
             position: "absolute", top: -40, right: -40, width: 200, height: 200,
             borderRadius: "50%",
@@ -243,7 +309,7 @@ export default function DashboardPage() {
           }}>
             <div>
               <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: "#f8fafc" }}>Students Currently Out</h2>
-              <p style={{ margin: "4px 0 0", color: "#64748b", fontSize: 13 }}>Live · auto-refreshes every 15 s</p>
+              <p style={{ margin: "4px 0 0", color: "#64748b", fontSize: 13 }}>Live · auto-refreshes every 15 s · timers update every second</p>
             </div>
             <button onClick={fetchData} style={{
               display: "flex", alignItems: "center", gap: 6,
@@ -282,13 +348,8 @@ export default function DashboardPage() {
               </h3>
               <p style={{ color: "#64748b", fontSize: 14, lineHeight: 1.7, marginBottom: 24 }}>
                 Your account needs to be linked to a school before the dashboard shows live data.
-                Ask your district IT admin to assign your account to a school, or use the mobile
-                scanner app once your school is set up.
               </p>
-              <div style={{
-                background: "#0f172a", borderRadius: 12, padding: "16px 20px",
-                border: "1px solid #334155", textAlign: "left",
-              }}>
+              <div style={{ background: "#0f172a", borderRadius: 12, padding: "16px 20px", border: "1px solid #334155", textAlign: "left" }}>
                 <p style={{ color: "#94a3b8", fontSize: 13, fontWeight: 600, margin: "0 0 6px" }}>Your account details:</p>
                 <p style={{ color: "#64748b", fontSize: 13, margin: "3px 0" }}>📧 {user?.email}</p>
                 <p style={{ color: "#64748b", fontSize: 13, margin: "3px 0" }}>🏫 {school || "No school linked yet"}</p>
@@ -306,49 +367,81 @@ export default function DashboardPage() {
           ) : (
             outStudents.map((s, i) => {
               const color = urgencyColor(s.scanned_at);
-              const mins = Math.floor((Date.now() - new Date(s.scanned_at).getTime()) / 60000);
+              const label = urgencyLabel(s.scanned_at);
+              const mins = Math.floor(elapsedMs(s.scanned_at) / 60000);
+              const isRecalling = recalling[s.student_id];
+
               return (
                 <div key={s.student_id} style={{
-                  display: "flex", alignItems: "center",
-                  padding: "16px 24px", gap: 16,
-                  borderBottom: i < outStudents.length - 1 ? "1px solid #1e293b" : "none",
+                  borderBottom: i < outStudents.length - 1 ? "1px solid #0f172a" : "none",
                   background: mins >= 15 ? "rgba(127,29,29,0.15)" : "transparent",
                   transition: "background 0.2s",
-                }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = mins >= 15 ? "rgba(127,29,29,0.25)" : "#0f172a50"; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = mins >= 15 ? "rgba(127,29,29,0.15)" : "transparent"; }}
-                >
-                  <div style={{
-                    width: 42, height: 42, borderRadius: 12,
-                    background: `${color}20`, border: `2px solid ${color}`,
-                    display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-                  }}>
-                    <span style={{ color, fontWeight: 700, fontSize: 14 }}>
-                      {s.full_name.split(" ").map((n: string) => n[0]).join("").slice(0, 2)}
-                    </span>
-                  </div>
-
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontWeight: 700, color: "#f1f5f9", fontSize: 15, marginBottom: 2 }}>{s.full_name}</div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 5, color: "#64748b", fontSize: 13 }}>
-                      <MapPin size={12} /> {s.location_name}
-                    </div>
-                  </div>
-
-                  <div style={{ textAlign: "right", flexShrink: 0 }}>
-                    <div style={{ color, fontWeight: 800, fontSize: 20, fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em" }}>
-                      {elapsed(s.scanned_at)}
-                    </div>
-                    <div style={{ color: "#475569", fontSize: 11 }}>time out</div>
-                  </div>
-
-                  {mins >= 15 && (
+                }}>
+                  <div style={{ display: "flex", alignItems: "flex-start", padding: "18px 24px", gap: 16 }}>
+                    {/* Avatar */}
                     <div style={{
-                      background: "#7f1d1d", color: "#fca5a5",
-                      padding: "4px 10px", borderRadius: 100,
-                      fontSize: 11, fontWeight: 700, flexShrink: 0,
-                    }}>OVERDUE</div>
-                  )}
+                      width: 44, height: 44, borderRadius: 12, flexShrink: 0,
+                      background: `${color}20`, border: `2px solid ${color}`,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                    }}>
+                      <span style={{ color, fontWeight: 800, fontSize: 14 }}>
+                        {s.full_name.split(" ").map((n: string) => n[0]).join("").slice(0, 2)}
+                      </span>
+                    </div>
+
+                    {/* Info */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 700, color: "#f1f5f9", fontSize: 15, marginBottom: 2 }}>{s.full_name}</div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 5, color: "#64748b", fontSize: 13, marginBottom: 8 }}>
+                        <MapPin size={12} /> {s.location_name}
+                      </div>
+                      {/* Progress bar timer */}
+                      <PassTimer iso={s.scanned_at} />
+                    </div>
+
+                    {/* Timer + status + recall */}
+                    <div style={{ textAlign: "right", flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 8 }}>
+                      <div>
+                        <div style={{
+                          color, fontWeight: 800, fontSize: 22,
+                          fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em",
+                          fontFamily: "monospace",
+                        }}>
+                          {elapsed(s.scanned_at)}
+                        </div>
+                        <div style={{ color: "#475569", fontSize: 11, textAlign: "center" }}>time out</div>
+                      </div>
+
+                      <div style={{ display: "flex", gap: 6 }}>
+                        {label !== "OK" && (
+                          <span style={{
+                            background: label === "OVERDUE" ? "#7f1d1d" : "#431407",
+                            color: label === "OVERDUE" ? "#fca5a5" : "#fed7aa",
+                            padding: "3px 8px", borderRadius: 100,
+                            fontSize: 10, fontWeight: 700,
+                          }}>{label}</span>
+                        )}
+                        <button
+                          onClick={() => handleRecall(s.student_id)}
+                          disabled={isRecalling}
+                          title="Mark student as returned"
+                          style={{
+                            display: "flex", alignItems: "center", gap: 4,
+                            background: isRecalling ? "#1e293b" : "#0f172a",
+                            border: "1px solid #334155", borderRadius: 8,
+                            padding: "4px 10px", color: "#94a3b8",
+                            fontSize: 11, fontWeight: 600, cursor: isRecalling ? "not-allowed" : "pointer",
+                            transition: "all 0.2s",
+                          }}
+                          onMouseEnter={e => { if (!isRecalling) { e.currentTarget.style.borderColor = "#22c55e"; e.currentTarget.style.color = "#22c55e"; } }}
+                          onMouseLeave={e => { e.currentTarget.style.borderColor = "#334155"; e.currentTarget.style.color = "#94a3b8"; }}
+                        >
+                          <PhoneCall size={11} />
+                          {isRecalling ? "…" : "Recall"}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               );
             })
@@ -359,7 +452,8 @@ export default function DashboardPage() {
         <div style={{ display: "flex", gap: 12, marginTop: 24, flexWrap: "wrap" }}>
           {[
             { label: "← Back to Website", to: "/" },
-            { label: "Features", to: "/features" },
+            { label: "📋 Pass History", to: "/passes" },
+            { label: "👥 Student Roster", to: "/students" },
             { label: "Contact Support", to: "/contact" },
           ].map(l => (
             <Link key={l.to} to={l.to} style={{

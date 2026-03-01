@@ -683,6 +683,279 @@ app.get(
 );
 
 /* -------------------------------------------------------------------------- */
+/* Pass History: completed hall passes with duration                          */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * GET /api/schools/:id/pass-history
+ * Returns completed hall passes (OUT → next IN pairs) for the school with
+ * duration_seconds computed. Passes that are still open (student still OUT)
+ * are included with duration_seconds = null and status = "ACTIVE".
+ * Query params: limit (default 100), offset (default 0)
+ */
+app.get(
+  "/api/schools/:id/pass-history",
+  authRequired(["ADMIN", "TEACHER"]),
+  async (req, res) => {
+    try {
+      const schoolId = req.params.id;
+      const limit = Math.min(Number(req.query.limit) || 100, 500);
+      const offset = Number(req.query.offset) || 0;
+
+      /* For each OUT scan find the next IN scan for the same student
+         (the one that immediately follows it by id).  If there is no
+         following IN scan the pass is still active. */
+      const rows = await all(
+        `
+        SELECT
+          out_evt.id          AS pass_id,
+          s.id                AS student_id,
+          s.full_name,
+          s.grade,
+          l.id                AS location_id,
+          l.name              AS location_name,
+          l.code              AS location_code,
+          out_evt.scanned_at  AS out_at,
+          in_evt.scanned_at   AS in_at,
+          CASE
+            WHEN in_evt.scanned_at IS NOT NULL
+            THEN CAST(
+              (julianday(in_evt.scanned_at) - julianday(out_evt.scanned_at))
+              * 86400 AS INTEGER)
+            ELSE NULL
+          END AS duration_seconds,
+          CASE WHEN in_evt.id IS NULL THEN 'ACTIVE' ELSE 'COMPLETED' END AS status,
+          out_evt.source      AS scan_source
+        FROM scan_events out_evt
+        JOIN students s   ON s.id  = out_evt.student_id
+        JOIN locations l  ON l.id  = out_evt.location_id
+        LEFT JOIN scan_events in_evt
+          ON in_evt.student_id = out_evt.student_id
+         AND in_evt.direction  = 'IN'
+         AND in_evt.id = (
+               SELECT MIN(id) FROM scan_events
+               WHERE student_id = out_evt.student_id
+                 AND direction  = 'IN'
+                 AND id > out_evt.id
+             )
+        WHERE out_evt.direction = 'OUT'
+          AND s.school_id = ?
+        ORDER BY out_evt.id DESC
+        LIMIT ? OFFSET ?
+        `,
+        [schoolId, limit, offset]
+      );
+
+      // Total count (for pagination)
+      const total = await get(
+        `SELECT COUNT(*) AS cnt
+         FROM scan_events se
+         JOIN students s ON s.id = se.student_id
+         WHERE se.direction = 'OUT' AND s.school_id = ?`,
+        [schoolId]
+      );
+
+      res.json({ schoolId, total: total.cnt, limit, offset, passes: rows });
+    } catch (err) {
+      console.error("pass-history error", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+);
+
+/**
+ * GET /api/students/:id/pass-history
+ * Returns all passes for a specific student with duration.
+ */
+app.get(
+  "/api/students/:id/pass-history",
+  authRequired(["ADMIN", "TEACHER"]),
+  async (req, res) => {
+    try {
+      const studentId = req.params.id;
+
+      const rows = await all(
+        `
+        SELECT
+          out_evt.id          AS pass_id,
+          l.name              AS location_name,
+          l.code              AS location_code,
+          out_evt.scanned_at  AS out_at,
+          in_evt.scanned_at   AS in_at,
+          CASE
+            WHEN in_evt.scanned_at IS NOT NULL
+            THEN CAST(
+              (julianday(in_evt.scanned_at) - julianday(out_evt.scanned_at))
+              * 86400 AS INTEGER)
+            ELSE NULL
+          END AS duration_seconds,
+          CASE WHEN in_evt.id IS NULL THEN 'ACTIVE' ELSE 'COMPLETED' END AS status
+        FROM scan_events out_evt
+        JOIN locations l ON l.id = out_evt.location_id
+        LEFT JOIN scan_events in_evt
+          ON in_evt.student_id = out_evt.student_id
+         AND in_evt.direction  = 'IN'
+         AND in_evt.id = (
+               SELECT MIN(id) FROM scan_events
+               WHERE student_id = out_evt.student_id
+                 AND direction  = 'IN'
+                 AND id > out_evt.id
+             )
+        WHERE out_evt.direction  = 'OUT'
+          AND out_evt.student_id = ?
+        ORDER BY out_evt.id DESC
+        `,
+        [studentId]
+      );
+
+      res.json({ studentId, passes: rows });
+    } catch (err) {
+      console.error("student pass-history error", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+);
+
+/* -------------------------------------------------------------------------- */
+/* Student Roster with live status                                            */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * GET /api/schools/:id/roster
+ * Returns full student list for a school, each annotated with their live
+ * status (IN_CLASS | OUT | NO_SCANS) and, if OUT, how long they've been gone.
+ */
+app.get(
+  "/api/schools/:id/roster",
+  authRequired(["ADMIN", "TEACHER"]),
+  async (req, res) => {
+    try {
+      const schoolId = req.params.id;
+
+      const rows = await all(
+        `
+        SELECT
+          s.id,
+          s.full_name,
+          s.grade,
+          s.school_id_no,
+          s.qr_value,
+          s.card_uid,
+          se.direction        AS last_direction,
+          se.scanned_at       AS last_scan_at,
+          l.name              AS last_location_name,
+          l.code              AS last_location_code
+        FROM students s
+        LEFT JOIN (
+          SELECT se2.*
+          FROM scan_events se2
+          INNER JOIN (
+            SELECT student_id, MAX(scanned_at) AS max_at
+            FROM scan_events GROUP BY student_id
+          ) latest ON se2.student_id = latest.student_id
+                   AND se2.scanned_at = latest.max_at
+          GROUP BY se2.student_id  -- pick highest id if timestamps tie
+          HAVING se2.id = MAX(se2.id)
+        ) se ON se.student_id = s.id
+        LEFT JOIN locations l ON l.id = se.location_id
+        WHERE s.school_id = ?
+          AND s.is_active  = 1
+        ORDER BY s.full_name ASC
+        `,
+        [schoolId]
+      );
+
+      const students = rows.map((r) => ({
+        id: r.id,
+        full_name: r.full_name,
+        grade: r.grade,
+        school_id_no: r.school_id_no,
+        qr_value: r.qr_value,
+        card_uid: r.card_uid,
+        status: !r.last_direction
+          ? "NO_SCANS"
+          : r.last_direction === "OUT"
+            ? "OUT"
+            : "IN_CLASS",
+        last_scan_at: r.last_scan_at,
+        last_location: r.last_location_name
+          ? { name: r.last_location_name, code: r.last_location_code }
+          : null,
+      }));
+
+      res.json({ schoolId, count: students.length, students });
+    } catch (err) {
+      console.error("roster error", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+);
+
+/* -------------------------------------------------------------------------- */
+/* Manual recall: mark a student as returned (admin-injected IN scan)        */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * POST /api/students/:id/recall
+ * Inserts a manual IN scan for a student so the dashboard reflects they are
+ * back in class, even if their QR/NFC was not scanned on the way back.
+ */
+app.post(
+  "/api/students/:id/recall",
+  authRequired(["ADMIN", "TEACHER"]),
+  async (req, res) => {
+    try {
+      const studentId = req.params.id;
+
+      // Confirm student exists
+      const student = await get("SELECT * FROM students WHERE id = ?", [studentId]);
+      if (!student) return res.status(404).json({ error: "Student not found" });
+
+      // Find their current location from last OUT scan
+      const lastOut = await get(
+        `SELECT * FROM scan_events
+         WHERE student_id = ? AND direction = 'OUT'
+         ORDER BY scanned_at DESC, id DESC LIMIT 1`,
+        [studentId]
+      );
+
+      if (!lastOut) {
+        return res.status(400).json({ error: "Student has no active OUT pass to recall" });
+      }
+
+      // Check they haven't already returned
+      const direction = await get(
+        `SELECT direction FROM scan_events
+         WHERE student_id = ?
+         ORDER BY scanned_at DESC, id DESC LIMIT 1`,
+        [studentId]
+      );
+      if (direction && direction.direction === "IN") {
+        return res.status(400).json({ error: "Student is already marked as returned" });
+      }
+
+      // Insert manual IN scan at the same location
+      const result = await run(
+        `INSERT INTO scan_events
+         (student_id, location_id, direction, source, notes, scanned_at)
+         VALUES (?, ?, 'IN', 'MANUAL', 'Recalled by admin', CURRENT_TIMESTAMP)`,
+        [studentId, lastOut.location_id]
+      );
+
+      res.json({
+        success: true,
+        eventId: result.id,
+        student: { id: student.id, name: student.full_name },
+        message: "Student marked as returned to class"
+      });
+    } catch (err) {
+      console.error("recall error", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+);
+
+/* -------------------------------------------------------------------------- */
 /* Start server                                                               */
 /* -------------------------------------------------------------------------- */
 app.listen(PORT, () => {
