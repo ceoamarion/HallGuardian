@@ -11,7 +11,7 @@ export class EnhancedVitestMarkdownReporter {
         this.results = [];
     }
 
-    onFinished(files = [], errors = []) {
+    async onFinished(files = [], errors = []) {
         const lines = [`# ${this.title}\n`];
 
         let passed = 0;
@@ -36,8 +36,8 @@ export class EnhancedVitestMarkdownReporter {
             }
         }
 
-        const { writeFileSync } = require("node:fs");
         try {
+            const { writeFileSync } = await import("node:fs");
             writeFileSync(this.outputPath, lines.join("\n"), "utf-8");
         } catch {
             // Non-fatal — output path may not be writable in all environments
