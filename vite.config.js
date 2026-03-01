@@ -8,10 +8,8 @@ import { creaoPlugins } from "./config/vite/creao-plugin.mjs";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-	// NOTE: Using /QR-App/ because the site is served from ceoamarion.github.io/QR-App/
-	// Once hallguardian.com custom domain is set in GitHub Pages settings,
-	// change this back to "/" and re-add public/CNAME with "hallguardian.com"
-	base: "/QR-App/",
+	// base is "/" because we serve from hallguardian.com (custom domain = root path)
+	base: "/",
 	define: {
 		"import.meta.env.TENANT_ID": JSON.stringify(process.env.TENANT_ID || ""),
 	},
