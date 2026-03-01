@@ -192,6 +192,32 @@ app.get("/api/health", (req, res) => {
 });
 
 /* -------------------------------------------------------------------------- */
+/* Test helper (disabled in production)                                       */
+/* -------------------------------------------------------------------------- */
+// POST /api/test/school — inserts a minimal school row so tests can satisfy
+// the FK constraint on students.school_id and locations.school_id.
+// Only available when NODE_ENV !== "production".
+if (process.env.NODE_ENV !== "production") {
+  app.post("/api/test/school", async (req, res) => {
+    try {
+      const { name, short_code } = req.body;
+      if (!name || !short_code) {
+        return res.status(400).json({ error: "name and short_code are required" });
+      }
+      const result = await run(
+        `INSERT INTO schools (name, short_code, plan) VALUES (?, ?, 'FREE')`,
+        [name, short_code]
+      );
+      const school = await get("SELECT * FROM schools WHERE id = ?", [result.id]);
+      res.json({ success: true, school });
+    } catch (err) {
+      console.error("test/school error", err);
+      res.status(500).json({ error: "Internal server error", detail: err.message });
+    }
+  });
+}
+
+/* -------------------------------------------------------------------------- */
 /* Auth middleware                                                            */
 /* -------------------------------------------------------------------------- */
 function authRequired(roles = []) {
@@ -419,7 +445,7 @@ async function findOrCreateLocationByCode(schoolId, locationCode) {
     const result = await run(
       `INSERT INTO locations (school_id, name, code, type)
        VALUES (?, ?, ?, ?)`,
-      [schoolId, locationCode, locationCode, "UNKNOWN"]
+      [schoolId, locationCode, locationCode, "OTHER"]
     );
     loc = await get("SELECT * FROM locations WHERE id = ?", [result.id]);
   }
@@ -431,7 +457,7 @@ async function getNextDirection(studentId) {
   const last = await get(
     `SELECT direction FROM scan_events
      WHERE student_id = ?
-     ORDER BY scanned_at DESC
+     ORDER BY scanned_at DESC, id DESC
      LIMIT 1`,
     [studentId]
   );
